@@ -8,9 +8,6 @@ function Note({
   const [text, setText] = useState(note.text);
   const [personInCharge, setPersonInCharge] = useState(note.personInCharge);
 
-  let textfield;
-  let button;
-
   function save() {
     setEditing(false);
     updateNote({
@@ -19,6 +16,9 @@ function Note({
       personInCharge: Number(personInCharge),
     });
   }
+
+  let textfield;
+  let button;
 
   if (editing) {
     textfield = (

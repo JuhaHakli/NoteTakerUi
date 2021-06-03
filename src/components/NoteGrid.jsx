@@ -50,6 +50,7 @@ function NoteGrid({ search }) {
     api.putNotes(updatedNote.id, updatedNote);
   }
 
+  // Used to filter the visible notes from the grid according to the search terms.
   function searchFromNotes(note) {
     return search === '' || (
       note.text.toLowerCase().indexOf(search.toLowerCase()) > -1
