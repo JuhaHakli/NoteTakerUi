@@ -5,8 +5,8 @@ import SearchBar from './components/SearchBar';
 
 function App() {
   const [search, setSearch] = useState('');
-  function handleChange(event) {
-    setSearch(event.target.value);
+  function handleChange(value) {
+    setSearch(value);
   }
 
   return (
