@@ -5,25 +5,31 @@ function Note({
   note, people, deleteNote, updateNote,
 }) {
   const [editing, setEditing] = useState(false);
-  const [updatedNote, setUpdatedNote] = useState(JSON.parse(JSON.stringify(note)));
+  const [text, setText] = useState(note.text);
+  const [personInCharge, setPersonInCharge] = useState(note.personInCharge);
 
   let textfield;
   let button;
 
-  const personInChargeValue = note.personInCharge === 0
-    ? 0 : people.find((p) => p.id === note.personInCharge.id);
+  function save() {
+    setEditing(false);
+    updateNote({
+      id: note.id,
+      text,
+      personInCharge: Number(personInCharge),
+    });
+  }
 
   if (editing) {
     textfield = (
       <textarea
         onBlur={(event) => {
-          updatedNote.text = event.target.value;
-          setUpdatedNote(updatedNote);
+          setText(event.target.value);
         }}
-        defaultValue={note.text}
+        defaultValue={text}
       />
     );
-    button = <button type="button" className="save-button" onClick={() => { setEditing(false); updateNote(updatedNote); }}>Tallenna</button>;
+    button = <button type="button" className="save-button" onClick={() => { save(); }}>Tallenna</button>;
   } else {
     textfield = note.text;
     button = <button type="button" onClick={() => setEditing(true)}>Muokkaa</button>;
@@ -38,7 +44,7 @@ function Note({
       <div className="note-item-text">{textfield}</div>
       <div>
         Vastuuhenkilö:
-        <select value={personInChargeValue} disabled={!editing} className="person-select">
+        <select onChange={(event) => setPersonInCharge(event.target.value)} value={personInCharge} disabled={!editing} className="person-select">
           <option value="0">Ei vastuuhenkilöä</option>
           {people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
         </select>

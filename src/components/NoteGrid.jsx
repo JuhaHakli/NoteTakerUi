@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import PropTypes from 'prop-types';
+import Api from '../Api';
 import Note from './Note';
 import NewNote from './NewNote';
 
@@ -11,42 +11,43 @@ function NoteGrid({ search }) {
   const [notesLoading, setNotesLoading] = useState(true);
   const [peopleLoading, setPeopleLoading] = useState(true);
 
+  const api = new Api(process.env.REACT_APP_API_URL);
+
   // Fetch all notes
   useEffect(async () => {
-    const result = await axios(
-      'https://localhost:5001/Notes',
-    );
-    // Newest notes are sorted at the top.
+    const result = await api.getNotes();
     setNotes(result.data.sort((a, b) => b.id - a.id));
     setNotesLoading(false);
   }, []);
 
   // Fetch all people
   useEffect(async () => {
-    const result = await axios(
-      'https://localhost:5001/People',
-    );
+    const result = await api.getPeople();
     setPeople(result.data);
     setPeopleLoading(false);
   }, []);
 
+  // Methods for manipulating the notes-array and performing API-calls.
   function deleteNote(id) {
     setNotes(notes.filter((note) => note.id !== id));
-    axios.delete(`https://localhost:5001/Notes/${id}`);
+    api.deleteNotes(id);
   }
 
   function createNote(note) {
-    axios.post('https://localhost:5001/Notes', note)
+    api.postNotes(note)
       .then((res) => {
         setNotes([res.data, ...notes]);
       });
   }
 
   function updateNote(updatedNote) {
-    const index = notes.findIndex((note) => note.id === updatedNote.id);
-    notes[index] = updatedNote;
-    setNotes(notes);
-    axios.put(`https://localhost:5001/Notes/${updatedNote.id}`, updatedNote);
+    setNotes(notes.map((note) => {
+      if (note.id === updatedNote.id) {
+        return updatedNote;
+      }
+      return note;
+    }));
+    api.putNotes(updatedNote.id, updatedNote);
   }
 
   function searchFromNotes(note) {
